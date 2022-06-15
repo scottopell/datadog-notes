@@ -89,8 +89,15 @@ We then see the binding of `dlopen` which is almost certainly what triggers the
 next bit where `libdatadog-agent-three.so` is dynamically loaded by
 `libdatadog-agent-rtloader.so.1`
 
-My only unanswered question here is: Why don't I see the `dlopen` syscall in my
-`strace` output?
+~~My only unanswered question here is: Why don't I see the `dlopen` syscall in my
+`strace` output?~~
+Answer: simple, `dlopen` is not a syscall, its a library call. It is visible
+with `ltrace`:
+
+```
+$ ltrace -e dlopen -f -o ltrace_out.txt bin/agent/agent run
+226823 libdatadog-agent-rtloader.so.1->dlopen("libdatadog-agent-three.so", 257) = 0
+```
 
 One question you could ask here is: But we're setting the `RUNPATH` in the agent
 binary correctly, so why isn't it being used to search for
